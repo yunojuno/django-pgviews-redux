@@ -1,5 +1,6 @@
+from importlib import import_module
+
 from django.apps import apps
-from django.core.management import load_command_class
 from django.core.management.commands.makemigrations import Command as MakeMigrationsCommand
 
 from django_pgviews.db.migrations.autodetector import PGViewsAutodetector
@@ -19,7 +20,9 @@ def get_base_makemigrations_command():
             continue
         try:
             # Try to load makemigrations command from this app
-            return load_command_class(app_config.name, "makemigrations")
+            module = import_module("{}.management.commands.{}".format(app_config.name, "makemigrations"))
+            # Found a custom makemigrations Command class, use it as base
+            return module.Command
         except (ImportError, AttributeError):
             # This app doesn't have a custom makemigrations command
             continue
