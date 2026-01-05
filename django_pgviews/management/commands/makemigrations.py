@@ -16,7 +16,7 @@ def get_base_makemigrations_command():
     for app_config in apps.get_app_configs():
         # Stop when we reach django_pgviews to avoid circular dependency
         if app_config.name == "django_pgviews":
-            break
+            continue
         try:
             # Try to load makemigrations command from this app
             return load_command_class(app_config.name, "makemigrations")
